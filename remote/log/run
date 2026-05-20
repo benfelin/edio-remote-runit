@@ -1,0 +1,6 @@
+#!/bin/sh
+# runit log script for remote-daemon
+# logs go to ~/.local/share/log/remote-daemon/
+
+mkdir -p "$HOME/.local/share/log/remote-daemon"
+exec svlogd -tt "$HOME/.local/share/log/remote-daemon"

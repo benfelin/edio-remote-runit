@@ -1,0 +1,20 @@
+#!/bin/sh
+# runit run script for remote-daemon
+# lives at ~/.config/sv/remote-daemon/run
+
+# wait for DISPLAY to be available
+DISPLAY="${DISPLAY:-:0}"
+export DISPLAY
+
+# wait for X to be ready
+i=0
+while ! xdotool getactivewindow > /dev/null 2>&1; do
+    i=$((i + 1))
+    if [ $i -gt 30 ]; then
+        echo "Timed out waiting for X display $DISPLAY"
+        exit 1
+    fi
+    sleep 1
+done
+
+exec /usr/bin/python3 "$HOME/.local/bin/remote-daemon.py" 2>&1
