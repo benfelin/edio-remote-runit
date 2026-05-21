@@ -133,7 +133,7 @@ The hardware sends the same code regardless of which mode button was pressed.
 | trackball   | cursor movement |
 | left click  | left click      |
 | right click | right click     |
-| 46 dbl-click | unmapped       |
+| 46 mid-click | xdotool click 2       |
 
 ### Transport
 | Code | Label    | Action     |

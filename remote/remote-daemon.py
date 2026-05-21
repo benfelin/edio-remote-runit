@@ -61,12 +61,15 @@ BUTTON_MAP = {
     # dwm view all tags (bottom row centre — 0 key)
     33: ['xdotool', 'key', '--clearmodifiers', 'alt+0'],
 
+    # middle click (double-click button between L/R mouse buttons)
+    46: ['xdotool', 'click', '2'],
+
     # unmapped buttons:
     # row 1 mode selectors : 1(VCR), 2(DVD), 35(Teletext), 4(FM)
     # row 2 context buttons: 5, 6, 7, 8  (mode-dependent dual labels)
     # transport            : 12(rec), 14(source)
     # function row         : 20(window), 21(calendar/Bookmark), 22(audio/NumLock)
-    # mouse                : 46(double-click)
+    # mouse                : 46(middle click via xdotool)
     # bottom row           : 36(magnifier/search)
 }
 
