@@ -3,6 +3,14 @@
 # eDio USB Multi Remote Controller daemon
 # Reads raw 4-byte HID reports from /dev/hidraw-remote
 # Handles remote buttons (MPD/dwm) and mouse pad (uinput virtual mouse)
+#
+# Protocol (verified across 3 scan runs):
+#   byte 0: 0x40 = remote button event  |  0x88+ = mouse event
+#   byte 1: 0x00 = press, 0x80 = release  |  signed delta X
+#   byte 2: button code                    |  signed delta Y (inverted)
+#   byte 3: 0x0F always (footer)
+#
+# Mouse clicks encoded in byte 0: 0x89 = left, 0x8A = right
 
 import struct, subprocess, time, logging, sys, os
 import evdev
@@ -14,8 +22,8 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-DEVICE  = '/dev/hidraw-remote'
-DISPLAY = os.environ.get('DISPLAY', ':0')
+DEVICE   = '/dev/hidraw-remote'
+DISPLAY  = os.environ.get('DISPLAY', ':0')
 DEBOUNCE = 0.15
 
 home = os.path.expanduser('~')
@@ -32,16 +40,14 @@ BUTTON_MAP = {
     16: ['mpc', 'volume', '-5'],
     17: ['/bin/bash', f'{home}/.local/bin/mpc-mute-toggle.sh'],
 
-    # ncmpcpp view cycling
-    18: ['/bin/bash', f'{home}/.local/bin/ncmpcpp-view.sh', 'prev'],
-    19: ['/bin/bash', f'{home}/.local/bin/ncmpcpp-view.sh', 'next'],
+    # ncmpcpp view cycling (CH▲/CH▼)
+    18: ['/bin/bash', f'{home}/.local/bin/ncmpcpp-view.sh', 'next'],
+    19: ['/bin/bash', f'{home}/.local/bin/ncmpcpp-view.sh', 'prev'],
 
-    # play mode
-    20: ['mpc', 'single'],    # window symbol
-    21: ['mpc', 'update'],    # calendar symbol
-    32: ['mpc', 'repeat'],    # loop symbol
+    # play mode (bottom row left — circular double arrow icon)
+    32: ['mpc', 'repeat'],
 
-    # number keys 1-9 — switch dwm tags
+    # dwm tags 1-9 (numpad)
     23: ['xdotool', 'key', '--clearmodifiers', 'alt+1'],
     24: ['xdotool', 'key', '--clearmodifiers', 'alt+2'],
     25: ['xdotool', 'key', '--clearmodifiers', 'alt+3'],
@@ -52,14 +58,16 @@ BUTTON_MAP = {
     30: ['xdotool', 'key', '--clearmodifiers', 'alt+8'],
     31: ['xdotool', 'key', '--clearmodifiers', 'alt+9'],
 
-    # 0 key — jump to queue position 10
-    33: ['mpc', 'play', '10'],
+    # dwm view all tags (bottom row centre — 0 key)
+    33: ['xdotool', 'key', '--clearmodifiers', 'alt+0'],
 
-    # unmapped but available:
-    # 1  (VCR),  2  (DVD),   4  (FM)
-    # 5-8 (special), 12 (record), 14 (eject)
-    # 22 (audio), 35 (teletext), 36 (search), 46 (center pad click)
-    # note: button 64 (0x40) is permanently unusable — aliases with protocol framing byte
+    # unmapped buttons:
+    # row 1 mode selectors : 1(VCR), 2(DVD), 35(Teletext), 4(FM)
+    # row 2 context buttons: 5, 6, 7, 8  (mode-dependent dual labels)
+    # transport            : 12(rec), 14(source)
+    # function row         : 20(window), 21(calendar/Bookmark), 22(audio/NumLock)
+    # mouse                : 46(double-click)
+    # bottom row           : 36(magnifier/search)
 }
 
 
@@ -96,7 +104,7 @@ def wait_for_device(path, timeout=30):
 def main():
     wait_for_device(DEVICE)
 
-    # virtual mouse for the circular pad
+    # virtual mouse for the circular trackball pad
     cap = {
         e.EV_REL: [e.REL_X, e.REL_Y],
         e.EV_KEY: [e.BTN_LEFT, e.BTN_RIGHT],
@@ -134,12 +142,12 @@ def main():
                         run_command(BUTTON_MAP[b2])
 
                 elif b0 & 0x88 == 0x88:
-                    # mouse event
+                    # mouse event — byte 0 low bits are button state
                     btn_left  = 1 if b0 & 0x01 else 0
                     btn_right = 1 if b0 & 0x02 else 0
 
                     dx =  struct.unpack('b', bytes([b1]))[0]
-                    dy = -struct.unpack('b', bytes([b2]))[0]  # inverted Y axis
+                    dy = -struct.unpack('b', bytes([b2]))[0]  # Y axis inverted
 
                     if dx:
                         mouse.write(e.EV_REL, e.REL_X, dx)

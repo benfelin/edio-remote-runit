@@ -3,6 +3,11 @@
 
 <p align="center">
   <img src="assets/remote.png" alt="ASUS eDio USB Multi Remote Controller" width="300">
+  &nbsp;&nbsp;&nbsp;
+  <img src="assets/remote-map.svg" alt="Button code map schematic" width="200">
+</p>
+<p align="center">
+  <em>Left: actual hardware &nbsp;|&nbsp; Right: button code map (green = MPD, purple = dwm tags, dashed = unmapped)</em>
 </p>
 
 Controls MPD and dwm via a Cypress Semiconductor eDio USB Multi Remote Controller
@@ -98,103 +103,118 @@ Press a button on the remote — you should see `Command [...] OK` in the log.
 
 ## Button map
 
-### Source select (unmapped)
-| Code | ASUS Label | Action   |
-|------|------------|----------|
-| 1    | VCR        | unmapped |
-| 2    | DVD        | unmapped |
-| 35   | Teletext   | unmapped |
-| 4    | FM         | unmapped |
+> Codes verified across 3 independent scan runs. All 35 physical buttons accounted for.
 
-### Context buttons
-| Code | ASUS Label     | Action                      |
-|------|----------------|-----------------------------|
-| 5    | Menu           | unmapped                    |
-| 6    | Subtitles      | unmapped                    |
-| 7    | Audio          | unmapped                    |
-| 8    | Snapshot       | unmapped                    |
-| 22   | Instant Replay | unmapped                    |
-| 12   | Playback       | unmapped                    |
-| 21   | EPG            | mpc update (rescan library) |
-| 36   | Snapshot (2)   | unmapped                    |
+### Row 1 — mode selectors (unmapped)
+These buttons have no effect in the daemon. They were used by the original
+Windows software to switch context for rows 2 and function row buttons.
+
+| Code | Label    |
+|------|----------|
+| 1    | VCR      |
+| 2    | DVD      |
+| 35   | Teletext |
+| 4    | FM       |
+
+### Row 2 — context buttons (unmapped)
+Each button has two printed labels — DVD mode above, VCR mode below.
+The hardware sends the same code regardless of which mode button was pressed.
+
+| Code | DVD label (above) | VCR label (below) |
+|------|-------------------|-------------------|
+| 5    | Menu              | —                 |
+| 6    | Subtitles         | Playback          |
+| 7    | Audio             | EPG               |
+| 8    | Snapshot          | Snapshot          |
 
 ### Mouse pad
-| Control | ASUS Label  | Action          |
-|---------|-------------|-----------------|
-| —       | trackball   | cursor movement |
-| —       | left click  | left click      |
-| —       | right click | right click     |
-| 46      | down arrow  | unmapped        |
+| Control     | Action          |
+|-------------|-----------------|
+| trackball   | cursor movement |
+| left click  | left click      |
+| right click | right click     |
+| 46 dbl-click | unmapped       |
 
 ### Transport
-| Code | ASUS Label | Action     |
-|------|------------|------------|
-| 9    | ◄◄         | mpc prev   |
-| 10   | ►/II       | mpc toggle |
-| 11   | ►►         | mpc next   |
-| 32   | Repeat     | mpc repeat |
-| 13   | ■ stop     | mpc stop   |
-| 14   | ⏏ Source   | unmapped   |
+| Code | Label    | Action     |
+|------|----------|------------|
+| 9    | ◄◄       | mpc prev   |
+| 10   | ►/II     | mpc toggle |
+| 11   | ►►       | mpc next   |
+| 12   | ● rec    | unmapped   |
+| 13   | ■ stop   | mpc stop   |
+| 14   | ⏏ source | unmapped   |
 
 ### Volume / Channel
-| Code | ASUS Label | Action                       |
-|------|------------|------------------------------|
-| 15   | VOL +      | mpc volume +5                |
-| 16   | VOL -      | mpc volume -5                |
-| 17   | ◄× mute    | toggle mute (saves/restores) |
-| 18   | CH ▼       | ncmpcpp view prev            |
-| 19   | CH ▲       | ncmpcpp view next            |
+| Code | Label   | Action                       |
+|------|---------|------------------------------|
+| 15   | VOL+    | mpc volume +5                |
+| 16   | VOL-    | mpc volume -5                |
+| 17   | ◄× mute | toggle mute (saves/restores) |
+| 18   | CH▲     | ncmpcpp view next            |
+| 19   | CH▼     | ncmpcpp view prev            |
 
 ### Function row
-| Code | ASUS Label | Action     |
-|------|------------|------------|
-| 20   | Bookmark   | mpc single |
+DVD mode labels printed above each button in yellow.
+
+| Code | DVD label above | Icon          | Action   |
+|------|----------------|---------------|----------|
+| 20   | —              | window/screen | unmapped |
+| 21   | Bookmark       | calendar      | unmapped |
+| 22   | Num Lock       | speaker+waves | unmapped |
 
 ### Numpad
-| Code | ASUS Label  | Action      |
-|------|-------------|-------------|
-| 23   | 1           | dwm tag 1   |
-| 24   | 2 / Enter   | dwm tag 2   |
-| 25   | 3           | dwm tag 3   |
-| 26   | 4           | dwm tag 4   |
-| 27   | 5           | dwm tag 5   |
-| 28   | 6           | dwm tag 6   |
-| 29   | 7 / Go up   | dwm tag 7   |
-| 30   | 8           | dwm tag 8   |
-| 31   | 9 / Go to   | dwm tag 9   |
-| 33   | 0           | mpc play 10 |
+| Code | Label | Action      |
+|------|-------|-------------|
+| 23   | 1     | dwm tag 1   |
+| 24   | 2     | dwm tag 2   |
+| 25   | 3     | dwm tag 3   |
+| 26   | 4     | dwm tag 4   |
+| 27   | 5     | dwm tag 5   |
+| 28   | 6     | dwm tag 6   |
+| 29   | 7     | dwm tag 7   |
+| 30   | 8     | dwm tag 8   |
+| 31   | 9     | dwm tag 9   |
+
+### Bottom row
+| Code | Icon              | Action               |
+|------|-------------------|----------------------|
+| 32   | ↺ circular arrows | mpc repeat           |
+| 33   | 0                 | dwm view all tags    |
+| 36   | 🔍 magnifier      | unmapped             |
 
 ### ncmpcpp view cycle order
-`CH ▼` / `CH ▲` cycle through: playlist → browse → search → library →
+`CH▲` / `CH▼` cycle through: playlist → browse → search → library →
 playlist editor → tag → outputs → visualizer
+
 
 ---
 
 ## Unmapped buttons
 
-Available for future use:
-
-| Code | ASUS Label     |
-|------|----------------|
-| 1    | VCR            |
-| 2    | DVD            |
-| 4    | FM             |
-| 5    | Menu           |
-| 6    | Subtitles      |
-| 7    | Audio          |
-| 8    | Snapshot       |
-| 12   | Playback       |
-| 14   | ⏏ Source       |
-| 22   | Instant Replay |
-| 35   | Teletext       |
-| 36   | Snapshot (2)   |
-| 46   | ↓ (pad centre) |
-
-To add a mapping, edit `~/.local/bin/remote-daemon.py` and add an entry to
-`BUTTON_MAP`, then restart the service:
+Available for future use — add entries to `BUTTON_MAP` in
+`~/.local/bin/remote-daemon.py` then restart:
 ```bash
 sv restart ~/.config/sv/remote-daemon
 ```
+
+| Code | Label              | Notes                          |
+|------|--------------------|--------------------------------|
+| 1    | VCR                | row 1 mode selector            |
+| 2    | DVD                | row 1 mode selector            |
+| 4    | FM                 | row 1 mode selector            |
+| 35   | Teletext           | row 1 mode selector            |
+| 5    | Menu / —           | row 2 context, mode-dependent  |
+| 6    | Subtitles/Playback | row 2 context, mode-dependent  |
+| 7    | Audio / EPG        | row 2 context, mode-dependent  |
+| 8    | Snapshot           | row 2 context, mode-dependent  |
+| 12   | ● rec              | transport row 2                |
+| 14   | ⏏ source           | transport row 2                |
+| 20   | window icon        | function row                   |
+| 21   | calendar/Bookmark  | function row                   |
+| 22   | audio/Num Lock     | function row                   |
+| 46   | double-click       | mouse section centre button    |
+| 36   | 🔍 magnifier        | bottom row right               |
 
 ---
 
